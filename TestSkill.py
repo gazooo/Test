@@ -1,5 +1,6 @@
 import json
 
+#--------------entry point-----------------------------
 
 def lambda_handler(event, context):
     if event["request"]["type"] == "LaunchRequest":
@@ -15,36 +16,49 @@ def lambda_handler(event, context):
     }
 
 
+#--------------intent distribution --------------------
+
+def intent_router(event, context):
+    intent = event["request"]["intent"]["name"]
+
+    if intent == "StartNewGameIntent":
+        return startNewGame(event, context)
+
+    #-------------mandadory intents ------------------
+    if intent == "AMAZON.CancelIntent":
+        return cancel_intent()
+
+    if intent == "AMAZON.HelpIntent":
+        return help_intent()
+
+    if intent == "AMAZON.StopIntent":
+        return stop_intent()
+
+    if intent == "AMAZON.FallbackIntent":
+        return fallback_intent()
+
 def on_launch(event, context):
     return statement("Greetings", "Welcome to the math quiz", False)
 
 
-def intent_router(event, context):
-    intent = event["request"]["intent"]["name"]
-    if intent == "StartNewGameIntent":
-        return startNewGame(event, context)
-
-    # required Intents
-    if intent == "AMAZON.CancelIntent":
-        return cancel_intent()
-    if intent == "AMAZON.HelpIntent":
-        return help_intent()
-    if intent == "AMAZON.StopIntent":
-        return stop_intent()
-    if intent == "AMAZON.FallbackIntent":
-        return fallback_intent()
-
-
 def startNewGame(event, context):
-    return statement("New Game", "Okay, we start a new round. Get ready.", False)
+    return statement("New Game", "Okay, if you want to play, just push your echo button. When everybody is ready, just say 'start'", False)
+    #todo: Verbindung implementieren
 
+
+
+
+
+
+#-----------------mandatory intents----------------------------------
+#todo: implementieren aller obligatorischen intents
 
 def cancel_intent():
     return statement("CancelIntent", "You want to cancel", False)
 
 
 def help_intent():
-    return statement("HelplIntent", "You want help", False)
+    return statement("HelplIntent", "You want help?", False)
 
 
 def stop_intent():
@@ -54,6 +68,9 @@ def stop_intent():
 def fallback_intent():
     return statement("FallbackIntent", "You want to fall back", True)
 
+
+#-----------------Statement Section----------------------------
+#-----------------helper functions-----------------------------
 
 def statement(title, body, endit):
     speechlet = {}
